@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Actividad 2 - Circuitos lógicos</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    body {
+      background: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .contenedor {
+      max-width: 1200px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    .estado-actual {
+      font-size: 1.2rem;
+    }
+    .salida {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #28a745;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    }
+    .resaltar {
+      background-color: #d4edda !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <h1 class="text-center text-primary mb-3">
+      <i class="fas fa-microchip"></i>Circuitos lógicos
+    </h1>
+    <p class="text-center text-muted">Compuertas AND, NOT, OR, NAND y XOR | Función: F = AB + C'</p>
+
+    <!-- Controles de entrada -->
+    <div class="row text-center mb-4">
+      <div class="col-md-4">
+        <label class="font-weight-bold text-primary">Entrada A</label><br>
+        <button id="btnA" class="btn btn-secondary btn-lg" onclick="cambiarEntrada('A')">0</button>
+      </div>
+      <div class="col-md-4">
+        <label class="font-weight-bold text-primary">Entrada B</label><br>
+        <button id="btnB" class="btn btn-secondary btn-lg" onclick="cambiarEntrada('B')">0</button>
+      </div>
+      <div class="col-md-4">
+        <label class="font-weight-bold text-primary">Entrada C</label><br>
+        <button id="btnC" class="btn btn-secondary btn-lg" onclick="cambiarEntrada('C')">0</button>
+      </div>
+    </div>
+
+    <!-- Estado actual -->
+    <div id="estadoActual" class="alert alert-success text-center estado-actual"></div>
+	<!-- Imagen circuito -->
+    <div class="text-center mt-4">
+	 <p class="mt-2"><strong>Esquema del circuito</strong></p>
+    <img src="Img/CircuitVerse.jpg" alt="Circuito lógico con Arduino y sensor PIR" class="img-fluid rounded shadow">
+    </div>
+
+    <!-- Niveles -->
+    <div class="card mb-3">
+      <div class="card-header bg-info text-white">
+        <i class="fas fa-layer-group"></i> Niveles del Circuito
+      </div>
+      <div class="card-body">
+        <h5 class="text-primary">Nivel 1</h5>
+        <p><span class="badge badge-success">AND</span> N1 = A · B</p>
+        <p><span class="badge badge-danger">NOT</span> N2 = ¬C</p>
+        <p><span class="badge badge-warning">NAND</span> Siempre produce 0 (D1=1, D2=1)</p>
+
+        <h5 class="text-primary mt-3">Nivel 2</h5>
+        <p><span class="badge badge-primary">OR</span> N4 = N1 + N2</p>
+        <p><span class="badge badge-purple">XOR</span> N5 = NAND ⊕ D3 = 1</p>
+
+        <h5 class="text-primary mt-3">Nivel 3</h5>
+        <p><span class="badge badge-success">AND</span> F = N4 · N5 = N4</p>
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-triangle"></i> Nota: Como N5=1, la salida final es <strong>F = (A·B) + ¬C</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fórmula final -->
+    <div class="alert alert-primary text-center">
+      <strong>F(A,B,C) = AB + C'</strong>
+    </div>
+
+    <!-- Tabla de verdad -->
+    <h4><i class="fas fa-table"></i> Tabla de Verdad</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover text-center">
+        <thead class="thead-dark">
+          <tr>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+            <th>N1=A·B</th>
+            <th>N2=¬C</th>
+            <th>N4=N1+N2</th>
+            <th>NAND</th>
+            <th>D3</th>
+            <th>N5</th>
+            <th>F</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpoTabla"></tbody>
+      </table>
+    </div>
+
+    <!-- Análisis -->
+    <div class="card mt-4">
+  <div class="card-header bg-secondary text-white">
+    <i class="fas fa-search"></i> Análisis de Resultados
+  </div>
+  <div class="card-body">
+    <p><strong>Expresión en minterminos:</strong> F(A,B,C) = Σm(0,2,4,6,7)</p>
+    <p>F = A'B'C' + A'BC' + AB'C' + ABC' + ABC</p>
+    <p><strong>Simplificación:</strong> F(A,B,C) = C' + AB</p>
+    <ul>
+      <li>Si C=0: F=1 siempre</li>
+      <li>Si C=1: F=1 solo si A=1 y B=1</li>
+      <li>Activación en 5 de 8 casos (62.5%)</li>
+    </ul>
+    <p><strong>Aplicación:</strong> El circuito representa un sistema en base arduino donde
+      <b>C</b> es un sensor PIR de seguridad, 
+      <b>A</b> y <b>B</b> son switches de autorización 
+      y <b>F</b> es la señal de activación (Para este caso un diodo Led).
+    </p>
+
+    <!--imágenes -->
+    <div class="row text-center mt-4">
+      <div class="col-md-4">
+	  <p class="mt-2"><strong>Circuito Arduino</strong></p>
+        <img src="Img/Circuito_Arduino.jpg" class="img-fluid rounded shadow-sm" alt="Arduino">
+      </div>
+      <div class="col-md-4">
+	   <p class="mt-2"><strong>Sensor PIR</strong></p>
+        <img src="Img/pir.jpg" class="img-fluid rounded shadow-sm" alt="Sensor PIR">
+      </div>
+      <div class="col-md-4">
+	  <p class="mt-2"><strong>Switch</strong></p>
+        <img src="Img/swtich.jpg" class="img-fluid rounded shadow-sm" alt="Switch de control">
+      </div>
+    </div>
+  </div>
+</div>
+
+  </div>
+  
+      <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-4 mt-5">
+    <div class="container">
+      <p class="h6 mb-2">
+        <i class="fas fa-microchip"></i> Actividad 2 - Circuitos Lógicos
+      </p>
+      <p class="mb-1">
+        Matemáticas Discretas | Profesor: Johan Uscategui
+      </p>
+      <p class="mb-1">
+        &copy; 2025 - Ingeniería de Software | Corporación Universitaria Iberoamericana
+      </p>
+      <p class="font-italic mb-0">
+        Desarrollado por: <strong>Yesid Bernal - Codigo Banner:100161797</strong>
+      </p>
+    </div>
+  </footer>
+
+
+
+  <!--Lógica -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let entradas = { A:0, B:0, C:0 };
+
+    function cambiarEntrada(e) {
+      entradas[e] = entradas[e] === 1 ? 0 : 1;
+      const btn = document.getElementById("btn" + e);
+      btn.textContent = entradas[e];
+      btn.className = entradas[e] === 1 ? "btn btn-success btn-lg" : "btn btn-secondary btn-lg";
+      actualizarCircuito();
+    }
+
+    function actualizarCircuito() {
+      const a = entradas.A, b = entradas.B, c = entradas.C;
+      const n1 = (a && b) ? 1 : 0;
+      const n2 = (c === 0) ? 1 : 0;
+      const n4 = (n1 || n2) ? 1 : 0;
+      const nand = 0, d3 = 1, n5 = 1;
+      const f = n4;
+
+      document.getElementById("estadoActual").innerHTML = `
+        <div>Entradas: A=${a}, B=${b}, C=${c}</div>
+        <div>N1=${n1}, N2=${n2}, N4=${n4}, NAND=${nand}, D3=${d3}, N5=${n5}</div>
+        <div class="salida"> F = ${f}</div>
+      `;
+    }
+
+    function generarTabla() {
+      const tbody = document.getElementById("cuerpoTabla");
+      tbody.innerHTML = "";
+      for (let a=0; a<=1; a++) {
+        for (let b=0; b<=1; b++) {
+          for (let c=0; c<=1; c++) {
+            const n1 = (a && b) ? 1 : 0;
+            const n2 = (c===0) ? 1 : 0;
+            const n4 = (n1 || n2) ? 1 : 0;
+            const nand = 0, d3 = 1, n5 = 1;
+            const f = n4;
+
+            const fila = tbody.insertRow();
+            [a,b,c,n1,n2,n4,nand,d3,n5,f].forEach((val,i)=>{
+              const celda = fila.insertCell();
+              celda.textContent = val;
+              if(i===9 && f===1) fila.classList.add("resaltar");
+            });
+          }
+        }
+      }
+    }
+
+    actualizarCircuito();
+    generarTabla();
+  </script>
+</body>
+</html>
+
